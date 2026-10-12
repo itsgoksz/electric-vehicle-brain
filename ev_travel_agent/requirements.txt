@@ -1,0 +1,17 @@
+fastapi
+uvicorn
+langchain
+langchain-google-genai
+langgraph
+pydantic
+requests
+sqlalchemy
+aiosqlite
+python-dotenv
+googlemaps
+greenlet
+python-dateutil
+langchain-ollama
+sse-starlette
+aiohttp
+edge-tts
