@@ -1,86 +1,105 @@
 # 🚗 Electric Vehicle Brain (Car Co-Pilot)
 
-> **Multi-agent AI co-pilot and long-distance road trip planner for Electric Vehicles.** Models battery physics, elevation, ambient weather, fast-charging curves, and lifestyle stops in real time.
+> **Autonomous multi-agent trip planning engine & in-cockpit voice co-pilot for Electric Vehicles.** Models real-world aerodynamic drag, mountain elevation climbs, 10%→80% DC fast-charging tapers, and curated artisan dining stops over an asynchronous event bus.
 
 <p align="center">
-  <img src="assets/preview.png" alt="EV Brain Co-Pilot Interface" width="100%" style="border-radius: 16px; box-shadow: 0 20px 50px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1);" />
+  <img src="assets/ev_hero_preview.png" alt="EV Brain Showcase" width="100%" style="border-radius: 18px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.12);" />
 </p>
 
 ---
 
-## Why EV Brain?
+## ⚡ The Hard Problem with EV Road Trips
 
-Standard navigation apps treat electric cars like internal combustion engines: they plot the shortest highway route, slap on a generic range estimate, and leave you to pray that a charging station works.
+Standard navigation apps treat electric cars like internal combustion engines with a battery icon on top: they draw the shortest highway line, divide distance by an arbitrary EPA rating, and tell you you'll arrive with 12% battery.
 
-In reality, EV range is a physical and environmental equation:
-1. **Speed & Aero Drag:** Cruising at 120 km/h consumes exponentially more energy than 80 km/h.
-2. **Elevation & Terrain:** Climbing mountain ghats rapidly depletes the pack, while descending recharges via regenerative braking.
-3. **Weather & HVAC:** Cold weather degrades lithium-ion chemistry; heavy air conditioning or heating adds continuous auxiliary load.
-4. **Non-Linear Charging Curves:** DC fast chargers pump peak kilowatts between 10% and 80% State of Charge (SoC), then taper sharply. Arriving at a charger at 15% and leaving at 75% gets you to your destination hours faster than waiting around for 100%.
+Then reality strikes:
+1. **The Western Ghats & Mountain Ascent Penalty:** Heading from Bangalore up to Coorg or the Nilgiris (+1,850m elevation climb) increases energy draw **by up to 3x**. EPA estimates crumble on real ascents.
+2. **The 80% Fast-Charging Trap:** DC fast chargers (150kW+) pump peak power into battery packs between **10% and 80% State of Charge (SoC)**. After 80%, the battery management system throttles down to a trickle (15–25kW) to protect cell chemistry. Waiting around to charge to 100% wastes 45 extra minutes of your life.
+3. **The Desolate Truck-Stop Misery:** Generic maps dump you at unshaded, broken single-gun chargers behind industrial toll gates with nowhere to sit, zero coffee, and dirty restrooms.
+4. **Range Anxiety in the Driver's Seat:** Staring nervously at a dropping battery gauge while driving 110 km/h into a stiff headwind makes road trips exhausting instead of fun.
 
-**Electric Vehicle Brain** solves this by coordinating specialized AI agents over an asynchronous event bus to compute realistic itineraries with optimal charging stops and curated meals during downtime.
+**Electric Vehicle Brain** solves this by treating long-distance EV travel as a physical, meteorological, and logistical optimization puzzle orchestrated by autonomous AI agents.
 
 ---
 
-## 🤖 Multi-Agent Architecture
+## 🧠 Core Innovations
 
-Rather than relying on a single monolithic prompt, EV Brain divides responsibilities among specialized autonomous agents communicating through an in-memory `AgentBus`:
+<p align="center">
+  <img src="assets/preview.png" alt="Live In-Cockpit Route & Telemetry Preview" width="100%" style="border-radius: 16px; box-shadow: 0 16px 40px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1);" />
+</p>
+
+### 1. Aerodynamic & Elevation Physics Engine
+Rather than assuming static km/kWh consumption, `VehicleDynamics` calculates dynamic consumption multipliers for every leg of the route:
+- **Kinetic Drag:** Models exponential aerodynamic drag scaling at highway speeds (cruising at 120 km/h vs 85 km/h).
+- **Topographic Grade:** Simulates heavy energy expenditure on uphill climbs (+1,800m Nilgiris pass) and calculates downhill **regenerative braking recuperation** (e.g. cresting a pass at 18% SoC and regenerating ~4.2 kWh on the descent into the valley).
+- **Meteorology & Thermal Penalty:** Connects to Open-Meteo along route waypoints to factor in headwinds, ambient temperature, and cabin HVAC draw.
+
+### 2. The 10% → 80% Peak Curve Optimization
+EV Brain plans charging stops **strictly within your battery's peak acceptance window**. By pulling into a 150kW DC fast charger at 12–18% SoC and departing at 75–80%, you achieve the highest possible average charging speed—slashing total door-to-door trip duration.
+
+### 3. Curated 20-Minute Lifestyle & Coffee Sync
+Because your optimal DC charge stop takes only 20 to 25 minutes, EV Brain pairs every charging stop with verified dining:
+- Automatically filters out bleak industrial substations and unshaded gravel lots.
+- Matches stops with specialty coffee roasteries (Blue Tokai, artisan bakeries, Subbaiah Kaapi House) within a 2-minute walk of the charging bay.
+- Aligns with driver dietary preferences (pure vegetarian, South Indian filter coffee, pet-friendly green spaces).
+
+### 4. Hands-Free In-Cockpit Voice Assistant
+Built for eyes-on-the-road driving. Using in-browser speech recognition (`react-speech-recognition`) and neural streaming text-to-speech (`edge-tts`), drivers can ask conversational questions in plain English:
+> *"Can we make it through the mountain pass without stopping?"*  
+> **Co-Pilot:** *"You'll crest the ghat at 18% SoC. The downhill descent will regenerate ~4.2 kWh via regenerative braking, arriving at your hotel with 22% remaining. No extra charge stop required."*
+
+---
+
+## 🤖 Multi-Agent Architecture (`AgentBus`)
+
+EV Brain coordinates specialized autonomous agents communicating through an asynchronous in-memory event bus:
 
 ```mermaid
 flowchart TD
-    User([Driver via Voice or Text]) --> Chat[FastAPI Chat Endpoint]
-    Chat --> MC[Mission Control Agent
-Intent Classification & Coordination]
+    Driver([Driver Voice or Input]) --> ChatAPI[FastAPI /chat API]
+    ChatAPI --> MC[Mission Control Agent
+Intent Classification & Mission Decomposition]
     
     subgraph AgentBusSystem [Asynchronous AgentBus]
-        MC --> Bus[AgentBus Event Dispatcher]
+        MC --> Bus[AgentBus Event Broker]
         
-        Bus --> Route[Route Agent
-Google Maps Directions & Polyline]
-        Bus --> Dynamics[Vehicle Dynamics Model
-Speed, Elevation & Drag Multipliers]
-        Bus --> Weather[Weather Agent
-Open-Meteo Waypoint Temperatures]
-        Bus --> Charging[Charging Agent
-OpenChargeMap Fast Chargers]
-        Bus --> Food[Food & Curation Agent
-Dining During 30-min Charge Windows]
-        Bus --> Memory[Memory Agent
-Driver Habits & Preferred Networks]
+        Bus <--> Route[Route Agent
+Google Maps Directions & Polyline Extraction]
+        Bus <--> Dynamics[Vehicle Dynamics Model
+Speed, Elevation & Regen Kinetic Math]
+        Bus <--> Weather[Weather Agent
+Open-Meteo Waypoint Temperatures & Wind]
+        Bus <--> Charging[Charging Agent
+OpenChargeMap Fast-Charger Corridor Scanner]
+        Bus <--> Food[Food & Curation Agent
+20-min Specialty Dining & Coffee Sync]
+        Bus <--> Memory[Memory Agent
+Driver Habits, Preferred Networks & Vehicle Specs]
     end
 
     Route & Dynamics & Weather & Charging & Food --> Opt[Optimization Agent
-Minimize Drive + Charge Time with Safe Buffer]
+Minimize Drive + Charge Time with Safe 15% Buffer]
     Opt --> Synth[Response Synthesizer]
-    Synth --> Audio[Edge-TTS Neural Voice Engine]
-    Synth --> Frontend[React Google Maps Cockpit UI]
+    Synth --> Audio[Edge-TTS Neural Audio Stream]
+    Synth --> Cockpit[React Google Maps Cockpit UI]
 ```
-
-### The Specialized Agents
-- **Mission Control Agent:** Intercepts driver voice inputs, classifies conversational intent, builds multi-step execution plans, and routes tasks.
-- **Route Agent:** Calls Google Maps Directions API to extract route geometries, distances, and encoded polylines.
-- **Vehicle Dynamics Model:** Computes energy consumption multipliers based on velocity profiles, elevation gradients, and HVAC load.
-- **Charging Agent:** Queries OpenChargeMap and Google Places to locate high-power DC fast chargers (CCS2 / Type 2) along the travel corridor.
-- **Weather Agent:** Pulls real-time ambient temperatures, wind vectors, and precipitation along waypoints to calculate aerodynamic resistance and thermal penalties.
-- **Food & Curation Agent:** Recommends top-rated cafes, restaurants, and clean restrooms located at or within walking distance of the charging stop.
-- **Optimization Agent:** Assembles the final itinerary, guaranteeing that battery State of Charge (SoC) never dips below safety thresholds (e.g., 10-15% reserve buffer).
-- **TTS Engine:** Generates natural spoken responses via `edge-tts` streamed back to the car cockpit.
 
 ---
 
 ## 🛠️ Tech Stack
 
-| Layer | Technology | Details |
+| Layer | Technology | Description |
 | :--- | :--- | :--- |
-| **Backend Framework** | [FastAPI](https://fastapi.tiangolo.com/) + Uvicorn | High-performance asynchronous API server |
-| **Agent Framework** | [LangChain](https://www.langchain.com/) & [LangGraph](https://langchain-ai.github.io/langgraph/) | Agent routing, message graphs & state persistence |
-| **LLM Engine** | Google Gemini / Ollama | Flexible language models for reasoning & intent classification |
-| **Mapping & Routing** | Google Maps API (`googlemaps`) | Real turn-by-turn routes & polyline decoding |
-| **Charging Database** | OpenChargeMap API | Global EV charging station data & connector types |
-| **Weather Telemetry** | Open-Meteo API | Free, keyless meteorological forecasts along waypoints |
-| **Voice & Speech** | `edge-tts` & `react-speech-recognition` | Low-latency neural speech synthesis & voice input |
-| **Frontend Cockpit** | [React](https://react.dev/) + [Vite](https://vite.dev/) | Interactive dashboard with `@vis.gl/react-google-maps` |
-| **Database** | SQLite + SQLAlchemy (`aiosqlite`) | Local trip storage, user preferences & vehicle specs |
+| **Backend API** | [FastAPI](https://fastapi.tiangolo.com/) + Uvicorn | High-throughput asynchronous Python server |
+| **Agent Framework** | [LangChain](https://www.langchain.com/) & [LangGraph](https://langchain-ai.github.io/langgraph/) | Multi-agent coordination, tool calling & graph state |
+| **LLM Inference** | Google Gemini & Ollama | Intent classification, query reasoning & natural dialogue |
+| **Kinetic Dynamics** | Custom Python Engine | Elevation gradients, aerodynamic drag & regen models |
+| **Navigation & Mapping**| Google Maps API (`googlemaps`) | Turn-by-turn routing, polyline geometry decoding |
+| **EV Station Network** | OpenChargeMap API | Global charging station database, plug types (CCS2/Type 2) & power ratings |
+| **Weather Telemetry** | Open-Meteo API | Free, real-time meteorological conditions along waypoints |
+| **Voice & Speech** | `edge-tts` & `react-speech-recognition` | Low-latency neural voice synthesis & speech input |
+| **Frontend Cockpit** | [React](https://react.dev/) + [Vite](https://vite.dev/) | Cockpit map with `@vis.gl/react-google-maps` |
+| **Local Database** | SQLite + SQLAlchemy (`aiosqlite`) | Local trip history, driver preferences & battery profiles |
 
 ---
 
@@ -88,17 +107,18 @@ Minimize Drive + Charge Time with Safe Buffer]
 
 ```text
 Car Co-pilot/
-├── assets/                       # UI screenshot & media
-│   └── preview.png
+├── assets/                       # Visual assets & UI captures
+│   ├── ev_hero_preview.png       # Cyber Night product showcase
+│   └── preview.png               # Live cockpit route telemetry
 ├── ev_travel_agent/
-│   ├── agents/                   # Autonomous agent suite
-│   │   ├── mission_control.py    # Master orchestrator & intent router
+│   ├── agents/                   # Specialized agent suite
+│   │   ├── mission_control.py    # Master coordinator & query classifier
 │   │   ├── route_agent.py        # Google Maps pathing & leg breakdown
-│   │   ├── charging_agent.py     # OpenChargeMap station lookup
-│   │   ├── weather_agent.py      # Waypoint weather & wind analysis
-│   │   ├── food_agent.py         # Curated dining recommendations
+│   │   ├── vehicle_brain_agent.py# Pack capacity & real-time SoC tracker
+│   │   ├── charging_agent.py     # OpenChargeMap fast-charger scanner
+│   │   ├── weather_agent.py      # Waypoint temperature & wind analysis
+│   │   ├── food_agent.py         # Curated dining & coffee discovery
 │   │   ├── optimization_agent.py # Total travel time & charging curve solver
-│   │   ├── vehicle_brain_agent.py# Battery capacity & SoC state tracker
 │   │   └── memory_agent.py       # Driver preferences & trip history
 │   ├── utils/
 │   │   ├── agent_bus.py          # Asynchronous pub/sub event broker
@@ -109,11 +129,11 @@ Car Co-pilot/
 │   │   ├── charging_service.py   # Charger network query client
 │   │   └── weather_service.py    # Open-Meteo weather client
 │   ├── routers/
-│   │   └── chat.py               # Conversational & SSE streaming endpoints
+│   │   └── chat.py               # Conversational & SSE audio streaming endpoints
 │   ├── frontend/                 # React + Vite cockpit application
 │   │   ├── src/
-│   │   │   ├── App.jsx           # Interactive map, itinerary card & voice input
-│   │   │   └── App.css           # Dark glassmorphic cockpit styling
+│   │   │   ├── App.jsx           # Cockpit UI, polyline map & voice triggers
+│   │   │   └── App.css           # Dark cockpit styling
 │   │   ├── package.json
 │   │   └── vite.config.js
 │   ├── database/                 # SQLite models & async sessions
@@ -131,6 +151,7 @@ Car Co-pilot/
 - **Python 3.10+**
 - **Node.js 18+**
 - A **Google Maps API Key** (Directions & Places enabled)
+- A **Google Gemini API Key** (or local Ollama instance)
 
 ### 2. Clone the Repository
 ```bash
@@ -150,10 +171,10 @@ Create a `.env` file inside `ev_travel_agent/`:
 ```env
 GOOGLE_MAPS_API_KEY=your-google-maps-api-key
 GEMINI_API_KEY=your-gemini-api-key
-# Optional: OPENCHARGEMAP_API_KEY=your-openchargemap-key
+# Optional: OPENCHARGEMAP_API_KEY=your-openchargemap-api-key
 ```
 
-Run the FastAPI backend server:
+Run the backend server:
 ```bash
 uvicorn main:app --reload --port 8000
 ```
@@ -174,10 +195,10 @@ Start the Vite development server:
 ```bash
 npm run dev
 ```
-Open [http://localhost:5173](http://localhost:5173) to plan road trips, test voice queries, and preview battery consumption curves.
+Open [http://localhost:5173](http://localhost:5173) to enter the cockpit, plan mountain road trips, and query the voice co-pilot.
 
 ---
 
 <p align="center">
-  Crafted by <a href="https://github.com/itsgoksz">itsgoksz</a>
+  Engineered for the open road by <a href="https://github.com/itsgoksz">itsgoksz</a>
 </p>
