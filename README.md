@@ -39,10 +39,22 @@ Because your optimal DC charge stop takes only 20 to 25 minutes, EV Brain pairs 
 - Matches stops with specialty coffee roasteries (Blue Tokai, artisan bakeries, Subbaiah Kaapi House) within a 2-minute walk of the charging bay.
 - Aligns with driver dietary preferences (pure vegetarian, South Indian filter coffee, pet-friendly green spaces).
 
-### 4. Hands-Free In-Cockpit Voice Assistant
-Built for eyes-on-the-road driving. Using in-browser speech recognition (`react-speech-recognition`) and neural streaming text-to-speech (`edge-tts`), drivers can ask conversational questions in plain English:
-> *"Can we make it through the mountain pass without stopping?"*  
-> **Co-Pilot:** *"You'll crest the ghat at 18% SoC. The downhill descent will regenerate ~4.2 kWh via regenerative braking, arriving at your hotel with 22% remaining. No extra charge stop required."*
+### 4. 100% Voice-Driven Conversational Co-Pilot with Live Transcripts
+Built for eyes-on-the-road driving. The entire trip planning dialogue happens naturally through voice with your AI car co-pilot:
+- **Hands-Free In-Cockpit Voice:** Drivers speak naturally to plan journeys, adjust schedules, and request real-time battery status without taking their hands off the wheel or eyes off the highway.
+- **Synchronized Live Chat Transcripts:** Every voice utterance from both the driver and the AI co-pilot is transcribed and rendered in real time in the cockpit chatbox, providing clear visual telemetry of all decisions.
+- **Dual-Modality (Voice & Typing):** While the system is optimized for complete voice control, drivers or passengers can also seamlessly type prompts and queries directly into the chat prompt at any time.
+
+<p align="center">
+  <img src="assets/voice_chat_preview.png" alt="Hands-Free Voice Dialogue and Live Chat Transcript" width="100%" style="border-radius: 18px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.12);" />
+</p>
+
+### 5. Multi-Stop Charging & Dining Itinerary Timeline
+Once your route is planned, EV Brain renders an interactive timeline detailing every waypoint, arrival distance, and charging station specification alongside curated dining:
+
+<p align="center">
+  <img src="assets/timeline_preview.png" alt="EV Trip Timeline with Fast Chargers and Curated Dining" width="100%" style="border-radius: 18px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.12);" />
+</p>
 
 ---
 
@@ -104,7 +116,9 @@ Minimize Drive + Charge Time with Safe 15% Buffer]
 ```text
 Car Co-pilot/
 ├── assets/                       # Visual assets & UI captures
-│   └── preview.png               # Live cockpit route telemetry
+│   ├── preview.png               # Live cockpit route telemetry
+│   ├── voice_chat_preview.png    # Hands-free voice dialogue & live chat transcripts
+│   └── timeline_preview.png      # Multi-stop fast charging & dining timeline
 ├── ev_travel_agent/
 │   ├── agents/                   # Specialized agent suite
 │   │   ├── mission_control.py    # Master coordinator & query classifier
