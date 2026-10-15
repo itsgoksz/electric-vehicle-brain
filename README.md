@@ -1,16 +1,16 @@
-# 🚗 Electric Vehicle Brain (Car Co-Pilot)
+# Electric Vehicle Brain
 
-> **Autonomous multi-agent trip planning engine & in-cockpit voice co-pilot for Electric Vehicles.** Models real-world aerodynamic drag, mountain elevation climbs, 10%→80% DC fast-charging tapers, and curated artisan dining stops over an asynchronous event bus.
+> Autonomous multi-agent trip planning engine and in-cockpit voice co-pilot for Electric Vehicles. Models real-world aerodynamic drag, mountain elevation climbs, 10%→80% DC fast-charging tapers, and curated artisan dining stops over an asynchronous event bus.
 
 <p align="center">
-  <img src="assets/ev_hero_preview.png" alt="EV Brain Showcase" width="100%" style="border-radius: 18px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.12);" />
+  <img src="assets/preview.png" alt="AI EV Travel Assistant Cockpit" width="100%" style="border-radius: 18px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.12);" />
 </p>
 
 ---
 
-## ⚡ The Hard Problem with EV Road Trips
+## The Hard Problem with EV Road Trips
 
-Standard navigation apps treat electric cars like internal combustion engines with a battery icon on top: they draw the shortest highway line, divide distance by an arbitrary EPA rating, and tell you you'll arrive with 12% battery.
+Standard navigation apps treat electric cars like internal combustion engines with a battery icon on top: they draw the shortest highway line, divide distance by an arbitrary EPA rating, and tell you you will arrive with 12% battery.
 
 Then reality strikes:
 1. **The Western Ghats & Mountain Ascent Penalty:** Heading from Bangalore up to Coorg or the Nilgiris (+1,850m elevation climb) increases energy draw **by up to 3x**. EPA estimates crumble on real ascents.
@@ -22,11 +22,7 @@ Then reality strikes:
 
 ---
 
-## 🧠 Core Innovations
-
-<p align="center">
-  <img src="assets/preview.png" alt="Live In-Cockpit Route & Telemetry Preview" width="100%" style="border-radius: 16px; box-shadow: 0 16px 40px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1);" />
-</p>
+## Core Innovations
 
 ### 1. Aerodynamic & Elevation Physics Engine
 Rather than assuming static km/kWh consumption, `VehicleDynamics` calculates dynamic consumption multipliers for every leg of the route:
@@ -50,7 +46,7 @@ Built for eyes-on-the-road driving. Using in-browser speech recognition (`react-
 
 ---
 
-## 🤖 Multi-Agent Architecture (`AgentBus`)
+## Multi-Agent Architecture (AgentBus)
 
 EV Brain coordinates specialized autonomous agents communicating through an asynchronous in-memory event bus:
 
@@ -86,7 +82,7 @@ Minimize Drive + Charge Time with Safe 15% Buffer]
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Layer | Technology | Description |
 | :--- | :--- | :--- |
@@ -103,12 +99,11 @@ Minimize Drive + Charge Time with Safe 15% Buffer]
 
 ---
 
-## 📁 Repository Structure
+## Repository Structure
 
 ```text
 Car Co-pilot/
 ├── assets/                       # Visual assets & UI captures
-│   ├── ev_hero_preview.png       # Cyber Night product showcase
 │   └── preview.png               # Live cockpit route telemetry
 ├── ev_travel_agent/
 │   ├── agents/                   # Specialized agent suite
@@ -145,7 +140,7 @@ Car Co-pilot/
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### 1. Prerequisites
 - **Python 3.10+**
